@@ -62,9 +62,9 @@ class PokemonListScreenWidgetModel extends WidgetModel<PokemonListScreen, Pokemo
   }
 
   void _scrollListener() {
-    if (_scrollController.position.extentAfter < _screenHeight10thPart &&
-        !_isLoading &&
-        !_hasError) {
+    if (!_isLoading &&
+        !_hasError &&
+        _scrollController.position.extentAfter < _screenHeight10thPart) {
       _loadPokemonList();
     }
   }
