@@ -71,10 +71,6 @@ class PokemonListScreenWidgetModel extends WidgetModel<PokemonListScreen, Pokemo
 
   Future<void> _loadPokemonList() async {
     final previousData = _pokemonListState.value?.data ?? <Pokemon>[];
-    double maxExtent = 0;
-    if (_scrollController.hasClients) {
-      maxExtent = _scrollController.position.maxScrollExtent;
-    }
 
     _pokemonListState.loading(previousData);
 
@@ -84,12 +80,6 @@ class PokemonListScreenWidgetModel extends WidgetModel<PokemonListScreen, Pokemo
         AppConsts.pageLimit,
       );
       _pokemonListState.content([...previousData, ...res]);
-
-      Future.delayed(Duration(milliseconds: 20), () {
-        _scrollController.jumpTo(
-          maxExtent,
-        );
-      });
     } on Exception catch (e) {
       _pokemonListState.error(e, previousData);
     }
