@@ -17,7 +17,14 @@ class PokemonListScreen extends ElementaryWidget<IPokemonListWidgetModel> {
       ),
       body: EntityStateNotifierBuilder<Iterable<Pokemon>>(
         listenableEntityState: wm.pokemonListState,
-        loadingBuilder: (_, __) => const _LoadingWidget(),
+        loadingBuilder: (_, pokemons) => (pokemons?.isEmpty ?? true)
+            ? const _LoadingWidget()
+            : _PokemonList(
+                pokemons: pokemons,
+                nameStyle: wm.pokemonNameStyle,
+                controller: wm.scrollController,
+                isLoading: true,
+              ),
         errorBuilder: (_, __, ___) => const _ErrorWidget(),
         builder: (_, pokemons) => _PokemonList(
           pokemons: pokemons,
@@ -32,6 +39,7 @@ class PokemonListScreen extends ElementaryWidget<IPokemonListWidgetModel> {
 class _PokemonList extends StatelessWidget {
   final Iterable<Pokemon>? pokemons;
   final TextStyle nameStyle;
+  final bool isLoading;
 
   final ScrollController controller;
   const _PokemonList({
@@ -39,6 +47,7 @@ class _PokemonList extends StatelessWidget {
     required this.pokemons,
     required this.nameStyle,
     required this.controller,
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
@@ -49,11 +58,13 @@ class _PokemonList extends StatelessWidget {
 
     return ListView.separated(
       controller: controller,
-      itemBuilder: (_, index) => _PokemonWidget(
-        pokemon: pokemons!.elementAt(index),
-        style: nameStyle,
-        index: index,
-      ),
+      itemBuilder: (_, index) => isLoading && index == pokemons!.length - 1
+          ? const CircularProgressIndicator.adaptive()
+          : _PokemonWidget(
+              pokemon: pokemons!.elementAt(index),
+              style: nameStyle,
+              index: index,
+            ),
       separatorBuilder: (_, __) => const Divider(),
       itemCount: pokemons!.length,
       cacheExtent: 800,
