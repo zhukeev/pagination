@@ -90,7 +90,7 @@ class _PokemonWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        '$index ${pokemon.name}',
+        '${index + 1} ${pokemon.name}',
         style: style,
       ),
     );
@@ -102,8 +102,15 @@ class _LoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('loading'),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          CircularProgressIndicator.adaptive(),
+          SizedBox(height: 16),
+          Text('loading'),
+        ],
+      ),
     );
   }
 }
