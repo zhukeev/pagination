@@ -1,6 +1,7 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:pagination/domain/pokemon.dart';
+import 'package:pagination/ui/res/pokemon_strings.dart';
 import 'package:pagination/ui/screen/pokemon_list_screen/pokemon_list_screen_widget_model.dart';
 
 class PokemonListScreen extends ElementaryWidget<IPokemonListWidgetModel> {
@@ -13,23 +14,23 @@ class PokemonListScreen extends ElementaryWidget<IPokemonListWidgetModel> {
   Widget build(IPokemonListWidgetModel wm) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pokemon List'),
+        title: const Text(PokemonString.pokemonListPageTitle),
       ),
-      body: EntityStateNotifierBuilder<Iterable<Pokemon>>(
+      body: EntityStateNotifierBuilder<List<Pokemon>>(
         listenableEntityState: wm.pokemonListState,
         loadingBuilder: (_, pokemons) => (pokemons?.isEmpty ?? true)
             ? const _LoadingWidget()
             : _PokemonList(
                 pokemons: pokemons,
                 nameStyle: wm.pokemonNameStyle,
-                controller: wm.scrollController,
+                onItemBuilt: wm.onPokemonItemBuilt,
                 isLoading: true,
               ),
         errorBuilder: (_, __, ___) => const _ErrorWidget(),
         builder: (_, pokemons) => _PokemonList(
           pokemons: pokemons,
           nameStyle: wm.pokemonNameStyle,
-          controller: wm.scrollController,
+          onItemBuilt: wm.onPokemonItemBuilt,
         ),
       ),
     );
@@ -37,16 +38,16 @@ class PokemonListScreen extends ElementaryWidget<IPokemonListWidgetModel> {
 }
 
 class _PokemonList extends StatelessWidget {
-  final Iterable<Pokemon>? pokemons;
+  final List<Pokemon>? pokemons;
   final TextStyle nameStyle;
   final bool isLoading;
+  final ValueChanged<int>? onItemBuilt;
 
-  final ScrollController controller;
   const _PokemonList({
     Key? key,
     required this.pokemons,
     required this.nameStyle,
-    required this.controller,
+    this.onItemBuilt,
     this.isLoading = false,
   }) : super(key: key);
 
@@ -57,11 +58,11 @@ class _PokemonList extends StatelessWidget {
     }
 
     return ListView.separated(
-      controller: controller,
       itemBuilder: (_, index) => isLoading && index == pokemons!.length - 1
           ? const CircularProgressIndicator.adaptive()
           : _PokemonWidget(
               pokemon: pokemons!.elementAt(index),
+              onItemBuilt: () => onItemBuilt?.call(index),
               style: nameStyle,
               index: index,
             ),
@@ -72,16 +73,30 @@ class _PokemonList extends StatelessWidget {
   }
 }
 
-class _PokemonWidget extends StatelessWidget {
+class _PokemonWidget extends StatefulWidget {
   final Pokemon pokemon;
   final int index;
   final TextStyle style;
+  final VoidCallback onItemBuilt;
+
   const _PokemonWidget({
     Key? key,
     required this.pokemon,
     required this.index,
     required this.style,
+    required this.onItemBuilt,
   }) : super(key: key);
+
+  @override
+  State<_PokemonWidget> createState() => _PokemonWidgetState();
+}
+
+class _PokemonWidgetState extends State<_PokemonWidget> {
+  @override
+  void initState() {
+    super.initState();
+    widget.onItemBuilt();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +105,8 @@ class _PokemonWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        '${index + 1} ${pokemon.name}',
-        style: style,
+        '${widget.index + 1} ${widget.pokemon.name}',
+        style: widget.style,
       ),
     );
   }
@@ -108,7 +123,7 @@ class _LoadingWidget extends StatelessWidget {
         children: const [
           CircularProgressIndicator.adaptive(),
           SizedBox(height: 16),
-          Text('loading'),
+          Text(PokemonString.loading),
         ],
       ),
     );
@@ -121,7 +136,7 @@ class _ErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Error'),
+      child: Text(PokemonString.error),
     );
   }
 }
@@ -132,7 +147,7 @@ class _EmptyList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Empty list'),
+      child: Text(PokemonString.emptyList),
     );
   }
 }

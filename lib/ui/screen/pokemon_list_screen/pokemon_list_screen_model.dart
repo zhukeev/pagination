@@ -12,10 +12,9 @@ class PokemonListScreenModel extends ElementaryModel {
   ) : super(errorHandler: errorHandler);
 
   /// Return iterable pokemons.
-  Future<Iterable<Pokemon>> loadPokemons(int offset, int limit) async {
+  Future<List<Pokemon>> loadPokemons(int offset, int limit) async {
     try {
-      final res = await _pokemonRepository.getPokemons(offset, limit);
-      return res;
+      return await _pokemonRepository.getPokemons(offset, limit);
     } on Exception catch (e) {
       handleError(e);
       rethrow;
