@@ -75,11 +75,13 @@ class PokemonListScreenWidgetModel extends WidgetModel<PokemonListScreen, Pokemo
     _pokemonListState.loading(previousData);
 
     try {
-      final res = await model.loadCountries(
+      final res = await model.loadPokemons(
         previousData.length + AppConsts.pageOffset,
         AppConsts.pageLimit,
       );
       _pokemonListState.content([...previousData, ...res]);
+
+      throw 'dasdasd';
     } on Exception catch (e) {
       _pokemonListState.error(e, previousData);
     }

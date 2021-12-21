@@ -9,7 +9,6 @@ part 'pokemon_client.g.dart';
 abstract class PokemonClient {
   factory PokemonClient(Dio dio, {String baseUrl}) = _PokemonClient;
 
-  /// Получение списка адресов пользователя
   @GET(AppUrls.pokemonList)
   Future<PageInfoData> getPokemons(
     @Query('offset') int offset,

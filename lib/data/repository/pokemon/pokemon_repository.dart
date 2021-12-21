@@ -9,7 +9,7 @@ class PokemonRepository {
   PokemonRepository(this._client);
 
   /// Return pokemons
-  Future<Iterable<Pokemon>> getAllCountries(int offset, int limit) =>
+  Future<Iterable<Pokemon>> getPokemons(int offset, int limit) =>
       _client.getPokemons(offset, limit).then(
             (value) => value.results.map(mapPokemon),
           );
