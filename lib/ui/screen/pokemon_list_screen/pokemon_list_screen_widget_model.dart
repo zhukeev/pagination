@@ -61,7 +61,7 @@ class PokemonListScreenWidgetModel extends WidgetModel<PokemonListScreen, Pokemo
   void onPokemonItemBuilt(int index) {
     final list = _pokemonListState.value?.data ?? <Pokemon>[];
 
-    if (list.length - 1 == index && !_isLastPage) {
+    if (!_isLastPage && list.length - 1 == index) {
       WidgetsBinding.instance?.addPostFrameCallback(
         (_) => _downloadPokemonList(),
       );
